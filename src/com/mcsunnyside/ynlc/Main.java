@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.mcsunnyside.ynlc.Metrics;
 
 import java.lang.reflect.Field;
 
@@ -23,6 +24,9 @@ public class Main extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(this, this);
+		saveDefaultConfig();
+		reloadConfig();
+		new Metrics(this); //bStats
 		try {
             serverInstance = getNMSClass("MinecraftServer").getMethod("getServer").invoke(null);
             tpsField = serverInstance.getClass().getField("recentTps");
@@ -35,8 +39,8 @@ public class Main extends JavaPlugin implements Listener {
 	public void onChatting(AsyncPlayerChatEvent event) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 		if(event.isAsynchronous()&&event.getMessage().equals("1")) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.GOLD+""+"SunnySide" +ChatColor.GREEN+ " >> "+ChatColor.LIGHT_PURPLE+"您没有掉线喵  您的网络延迟:"+getPing(event.getPlayer())+"ms"+ChatColor.LIGHT_PURPLE+" 服务器tps:"+getTps()+ChatColor.LIGHT_PURPLE+"/"+ChatColor.GREEN+"20.0");
-			event.getPlayer().sendMessage(ChatColor.GOLD+""+"SunnySide" +ChatColor.GREEN+ " >> "+ChatColor.LIGHT_PURPLE+"如果想要发送单纯的数字1，请发送"+ChatColor.GOLD+"\"!1\"");
+			event.getPlayer().sendMessage(ChatColor.GOLD+""+getConfig().getString("servername") +ChatColor.GREEN+ " >> "+ChatColor.LIGHT_PURPLE+"您没有掉线喵  您的网络延迟:"+getPing(event.getPlayer())+"ms"+ChatColor.LIGHT_PURPLE+" 服务器tps:"+getTps()+ChatColor.LIGHT_PURPLE+"/"+ChatColor.GREEN+"20.0");
+			event.getPlayer().sendMessage(ChatColor.GOLD+""+getConfig().getString("servername") +ChatColor.GREEN+ " >> "+ChatColor.LIGHT_PURPLE+"如果想要发送单纯的数字1，请发送"+ChatColor.GOLD+"\"!1\"");
 		}else if(event.isAsynchronous()&&event.getMessage().equals("!1")) {
 			event.setMessage(event.getMessage().replaceAll("!1", "1"));
 		}
